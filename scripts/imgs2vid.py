@@ -4,29 +4,21 @@ import sys
 
 filepath = sys.argv[1] 
 image_paths = [os.path.join(filepath, file) for file in os.listdir(filepath)]
+savepath = os.path.join(filepath, filepath.split('/')[-1]+'.mp4')
 
-h, w, _ = cv2.imread(image_paths[0]).shape
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter('../output.mp4', fourcc, 20.0, (w,h))
+if os.path.exists(savepath):
+	print('Over riding existing file')
 
-for path in image_paths:
+h, w = cv2.imread(image_paths[0]).shape[:2]
+fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+out = cv2.VideoWriter(savepath, fourcc, 1.0, (w,h))
+
+for idx, path in enumerate(image_paths):
 	frame = cv2.imread(path)
+	cv2.imshow('video output', frame)
+	cv2.waitKey(40)
 	out.write(frame)
 
+print('Saving file to {}'.format(savepath))
 out.release()
-
-vid = cv2.VideoCapture('../output.mp4')
-
-while True:
-	ret, frame = vid.read()
-	print(frame.shape)
-	cv2.imshow('out', frame)
-	key = cv2.waitKey(1)
-
-	if key == ord('q'):
-		break
-	else:
-		continue
-
-vid.release()
 cv2.destroyAllWindows()
