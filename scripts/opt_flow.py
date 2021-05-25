@@ -1,25 +1,66 @@
 import cv2
 import os
 import sys
+import numpy as np
 
-filepath = sys.argv[1] 
-image_paths = [os.path.join(filepath, file) for file in os.listdir(filepath)]
-savepath = os.path.join(filepath, filepath.split('/')[-1]+'.mp4')
+"""
+class OptFlowTracker(object):
 
-if os.path.exists(savepath):
-	print('Over riding existing file')
+    def __init__(self, vidpath, roi = None):
+        self.vid = cv2.VideoCapture(vidpath)
+        self.orb = cv2.ORB_create()        
 
-h, w = cv2.imread(image_paths[0]).shape[:2]
-fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-out = cv2.VideoWriter(savepath, fourcc, 1.0, (w,h))
-roi_selected = False
+    def track(self):
+        for idx, frame in enumerate(self.vid):
+            self.vid[idx] = self.process_frame(frame)
+    
+    def process_frame(self, frame):
 
-for idx, path in enumerate(image_paths):
-	frame = cv2.imread(path)
-	cv2.imshow('video output', frame)
-	cv2.waitKey(40)
-	out.write(frame)
+"""     
 
-print('Saving file to {}'.format(savepath))
-out.release()
-cv2.destroyAllWindows()
+vid = cv2.VideoCapture('../images/bend/color/color.mp4')
+orb = cv2.ORB_create()
+# matcher = cv2.BFMatcher()
+roi = [(819, 392), (1005, 563)]
+
+def point_select(event, x, y, flags, params):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        roi.append((x,y))
+    elif event == cv2.EVENT_RBUTTONDOWN and len(roi) > 0:
+        roi.pop()
+
+def process_frame(img):
+    out = img.copy()
+    mask_img = np.zeros(out.shape).astype(np.uint8)
+    pt1, pt2 = roi
+    cv2.rectangle(mask_img, pt1, pt2, (255,255,255), -1)
+    masked = cv2.bitwise_and(out, mask_img)
+    corners = cv2.goodFeaturesToTrack(cv2.cvtColor(masked, cv2.COLOR_BGR2GRAY), 20, 0.01, 10)     
+    corners = np.int0(corners)
+    for corner in corners:
+        x,y = corner.ravel()
+        cv2.circle(out, (x,y), 3, 255, -1)
+    return out
+
+# cv2.namedWindow('Output')
+# cv2.setMouseCallback('Output', point_select)
+
+while True:
+
+    try:
+        ret, frame = vid.read()
+        out = process_frame(frame) if len(roi) == 2 else frame
+        cv2.imshow('Output', out)
+        key = cv2.waitKey(50)
+
+        if key == ord('q'):
+            cv2.destroyAllWindows()
+            break
+        else:
+            continue
+    
+    except AttributeError:
+        print('No image found')
+        break
+
+
