@@ -5,9 +5,11 @@ points = []
 key = ''
 
 def callback(event, x,y,flags,param):
+
     if event == cv2.EVENT_LBUTTONDOWN:
         points.append((x,y))
         print(x,y)
+
 
 cv2.namedWindow('out')
 cv2.setMouseCallback('out', callback)

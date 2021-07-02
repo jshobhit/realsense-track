@@ -48,6 +48,7 @@ class OptFlowTracker(object):
 
         else:
             return self.static_img
+    
 
 # matcher = cv2.BFMatcher()
 # opt = OptFlowTracker('../images/bend/color/color.mp4', roi = [(819, 392), (1005, 563)])
