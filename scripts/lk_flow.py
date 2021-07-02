@@ -4,10 +4,10 @@ import cv2
 cap = cv2.VideoCapture('../images/cyclictest/color.mp4')
 
 # params for corner detection
-feature_params = dict( maxCorners = 30,
+feature_params = dict( maxCorners = 100,
 					qualityLevel = 0.01,
-					minDistance = 10,
-					blockSize = 2 )
+					minDistance = 5,
+					blockSize = 1 )
 
 # Parameters for lucas kanade optical flow
 lk_params = dict( winSize = (15, 15),

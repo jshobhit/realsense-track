@@ -3,7 +3,7 @@ import os
 import sys
 import numpy as np
 
-vidpath_default = '../image/bend/color/color.mp4'
+vidpath_default = '../images/bend/color/color.mp4'
 
 class OptFlowTracker(object):
 
@@ -21,7 +21,9 @@ class OptFlowTracker(object):
         cv2.setMouseCallback('Output', self.point_select)
 
     def point_select(self, event, x, y, flags, params):
+        global ix, iy
         if event == cv2.EVENT_LBUTTONDOWN:
+            ix, iy = x, y
             self.roi.append((x,y))
             self.draw = True
         elif event == cv2.EVENT_RBUTTONDOWN and len(self.roi) > 0:
@@ -29,7 +31,11 @@ class OptFlowTracker(object):
         elif event == cv2.EVENT_MOUSEMOVE and self.draw is True:
             pt1 = self.roi[0]
             pt2 = (x,y)
-            cv2.rectangle(self.static_img, pt1, pt2, (200, 0, 0), -1)
+            cv2.rectangle(self.static_img, (ix, iy), (x,y), (100, 0, 0), -1)
+        elif event == cv2.EVENT_LBUTTONUP:
+            self.draw = False
+            cv2.rectangle(self.static_img, (ix, iy), (x,y), (0, 255, 0), -1)
+
 
     def process_frame(self, img):
         out = img.copy()
@@ -41,10 +47,10 @@ class OptFlowTracker(object):
             masked = cv2.bitwise_and(out, mask_img)
             corners = cv2.goodFeaturesToTrack(cv2.cvtColor(masked, cv2.COLOR_BGR2GRAY), 20, 0.01, 10)     
             corners = np.int0(corners)
-            for corner in corners:
-                x,y = corner.ravel()
-                cv2.circle(out, (x,y), 3, 255, -1)
-            return out
+            # for corner in corners:
+                # x,y = corner.ravel()
+                # cv2.circle(out, (x,y), 3, 255, -1)
+            return out, corners
 
         else:
             return self.static_img
@@ -61,7 +67,7 @@ else:
 while True:
     try:
         ret, frame = opt.vid.read()
-        out = opt.process_frame(frame)
+        out, corners = opt.process_frame(frame)
         cv2.imshow('Output', out)
         key = cv2.waitKey(50)
 
