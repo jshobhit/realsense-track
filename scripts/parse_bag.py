@@ -5,11 +5,17 @@ import cv2
 import numpy as np
 import os
 
-filename = raw_input('Enter filename:\n')
+filepath = raw_input('Enter filepath:\n')
 
 bridge = CvBridge()
 print('Reading Bag file')
-bag = Bag('./data/{}.bag'.format(filename))
+bag = Bag(filepath)
+directory = os.path.dirname(filepath) 
+print('Saving all output from {1} to directory: {1}'.format(filepath, directory))
+
+if not os.path.exists(directory+'/output'):
+    os.mkdir(directory+'/output')
+
 
 def sample(x):
     pass
@@ -44,16 +50,16 @@ for idx, data in enumerate(bag.read_messages()):
     topic, msg, t = data
     if topic == topics['depth']:
 	img = bridge.imgmsg_to_cv2(msg, 'mono8')
-	cv2.imwrite('./data/images/{0}/depth/img_{1}.jpg'.format(filename, t), img)
+	cv2.imwrite('{0}/output/depth/img_{1}.jpg'.format(directory, t), img)
     elif topic == topics['color']:
 	img = bridge.imgmsg_to_cv2(msg, 'bgr8')
-	cv2.imwrite('./data/images/{0}/color/img_{1}.jpg'.format(filename, t), img)	
+	cv2.imwrite('{0}/output/color/img_{1}.jpg'.format(directory, t), img)	
     elif topic == topics['infra']:
 	img = bridge.imgmsg_to_cv2(msg)
-	cv2.imwrite('./data/images/{0}/infra/img_{1}.jpg'.format(filename, t), img)	
+	cv2.imwrite('{0}/output/infra/img_{1}.jpg'.format(directory, t), img)	
     elif topic == topics['confidence']:
 	img = bridge.imgmsg_to_cv2(msg)
-	cv2.imwrite('./data/images/{0}/confidence/img_{1}.jpg'.format(filename, t), img)	
+	cv2.imwrite('{0}/output/confidence/img_{1}.jpg'.format(directory, t), img)	
     else:
 	pass
 
