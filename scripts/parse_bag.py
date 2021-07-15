@@ -16,6 +16,10 @@ print('Saving all output from {1} to directory: {1}'.format(filepath, directory)
 if not os.path.exists(directory+'/output'):
     os.mkdir(directory+'/output')
 
+def smart_write(img, direc, filename):
+    if not os.path.exists(direc):
+        os.mkdir(direc)
+    cv2.imwrite('{0}/img_{1}.jpg'.format(direc, filename), img)
 
 def sample(x):
     pass
@@ -49,17 +53,33 @@ topics  = {v:k for k,v in ref_dict.iteritems()}
 for idx, data in enumerate(bag.read_messages()):
     topic, msg, t = data
     if topic == topics['depth']:
-	img = bridge.imgmsg_to_cv2(msg, 'mono8')
-	cv2.imwrite('{0}/output/depth/img_{1}.jpg'.format(directory, t), img)
+        try:
+	    img = bridge.imgmsg_to_cv2(msg)
+            smart_write(img, '{0}/output/depth'.format(directory), t)
+        except:
+            print('Error in depth')
+            pass
     elif topic == topics['color']:
-	img = bridge.imgmsg_to_cv2(msg, 'bgr8')
-	cv2.imwrite('{0}/output/color/img_{1}.jpg'.format(directory, t), img)	
+        try:
+	    img = bridge.imgmsg_to_cv2(msg)
+	    smart_write(img, '{0}/output/color'.format(directory), t)
+        except:
+            print('Error in color')
+            pass
     elif topic == topics['infra']:
-	img = bridge.imgmsg_to_cv2(msg)
-	cv2.imwrite('{0}/output/infra/img_{1}.jpg'.format(directory, t), img)	
+    	try:
+            img = bridge.imgmsg_to_cv2(msg)
+	    smart_write(img, '{0}/output/infra'.format(directory), t)	
+        except:
+            print('Error in infra')
+            pass
     elif topic == topics['confidence']:
-	img = bridge.imgmsg_to_cv2(msg)
-	cv2.imwrite('{0}/output/confidence/img_{1}.jpg'.format(directory, t), img)	
+        try:
+            img = bridge.imgmsg_to_cv2(msg)
+	    smart_write(img,'{0}/output/confidence'.format(directory), t)	
+        except:
+            print('Error in conf')
+            pass
     else:
 	pass
 
