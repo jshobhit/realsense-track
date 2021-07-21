@@ -17,9 +17,3 @@ depth_fps = len([x for x in depth_msgs]) // total_time
 infra_fps = len([x for x in infra_msgs]) // total_time
 
 print('Color FPS: {0}\n\nDepth FPS: {1}\n\nInfra FPS: {2}'.format(color_fps, depth_fps, infra_fps))
-
-colorsavepath = raw_input('Enter the save path for the color feed')
-print('Generating command for saving video')
-
-cmd = 'rosrun image_view video_saver image:={0} --fps {1} --filename {2}'.format('/device_0/sensor_1/Color_0/image/data', color_fps, colorsavepath)
-print(cmd)
