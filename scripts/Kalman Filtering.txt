@@ -1,0 +1,18 @@
+Kalman Filtering
+
+- recursive estimator. Does not require history of observations to compute current state estimate
+- state of the filter is represented by two variables: the a posteriori state estimate at a time k (xk) and the a posteriori estimate covariance matrix Pk (measure of accuracy of the state estimate)
+- It's called the a posteriori state estimate coz it doesn't factor in the current state information. 
+
+Algorithm structure
+- resembles alpha beta filter
+    Initialize
+    - set initial values of state estimates x,v using prior info, else 0
+    - select values of alpha and beta correction gains
+    Update
+    - Repeat for every time step
+    Iterate
+    - Send updated x and v (optional) as the filter outputs
+
+- two phases : predict and update
+
