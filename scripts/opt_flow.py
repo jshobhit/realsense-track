@@ -25,6 +25,7 @@ class OptFlowTracker(object):
         if event == cv2.EVENT_LBUTTONDOWN:
             ix, iy = x, y
             self.roi.append((x,y))
+            print(x,y)
             self.draw = True
         elif event == cv2.EVENT_RBUTTONDOWN and len(self.roi) > 0:
             self.roi.pop()
@@ -47,10 +48,10 @@ class OptFlowTracker(object):
             masked = cv2.bitwise_and(out, mask_img)
             corners = cv2.goodFeaturesToTrack(cv2.cvtColor(masked, cv2.COLOR_BGR2GRAY), 20, 0.01, 10)     
             corners = np.int0(corners)
-            # for corner in corners:
-                # x,y = corner.ravel()
-                # cv2.circle(out, (x,y), 3, 255, -1)
-            return out, corners
+            for corner in corners:
+                x,y = corner.ravel()
+                cv2.circle(out, (x,y), 3, 255, -1)
+            return out
 
         else:
             return self.static_img
@@ -67,10 +68,9 @@ else:
 while True:
     try:
         ret, frame = opt.vid.read()
-        out, corners = opt.process_frame(frame)
+        out= opt.process_frame(frame)
         cv2.imshow('Output', out)
         key = cv2.waitKey(50)
-
         if key == ord('q'):
             cv2.destroyAllWindows()
             break
